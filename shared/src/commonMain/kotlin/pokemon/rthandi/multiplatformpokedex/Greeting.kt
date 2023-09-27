@@ -4,13 +4,14 @@ import Pokemon
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
-import io.ktor.client.request.get
+import io.ktor.client.request.request
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
-import kotlin.random.Random
 
 class Greeting {
     private val platform: Platform = getPlatform()
+
+    private val localhostUrl = if (platform.name.contains("Android")) "10.0.2.2" else "localhost"
 
     private val httpClient = HttpClient {
         install(ContentNegotiation) {
@@ -25,10 +26,7 @@ class Greeting {
     @Throws(Exception::class)
     suspend fun greet(): List<String> = buildList {
         val pokemon: List<Pokemon> =
-            httpClient.get("http://0.0.0.0:8080/pokemon").body()
-        add(if (Random.nextBoolean()) "Hi!" else "Hello!")
-        add("Guess what it is! > ${platform.name.reversed()}!")
-        add("\nThere are only ${daysUntilNewYear()} days left until New Year! 🎆")
-        add("first pokemon ${pokemon[0]}")
+            httpClient.request("http://$localhostUrl:8080/pokemon").body()
+        pokemon.forEach { add(it.name) }
     }
 }
