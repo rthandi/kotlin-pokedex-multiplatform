@@ -11,7 +11,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.*
@@ -60,8 +62,12 @@ fun GreetingView(phrases: List<String>) {
 @OptIn(DelicateCoroutinesApi::class)
 @Composable
 fun CreatePokemonView() {
+    val pokemonName = remember {
+        mutableStateOf(TextFieldValue(""))
+    }
     Row {
-        Button(onClick = { GlobalScope.launch { Greeting().createPokemon("name", "fire") } }, content = { Text(
+        TextField(value = pokemonName.value, onValueChange = {pokemonName.value = it})
+        Button(onClick = { GlobalScope.launch { Greeting().createPokemon(pokemonName.value.text, "fire") } }, content = { Text(
             text = "Create"
         )})
     }
