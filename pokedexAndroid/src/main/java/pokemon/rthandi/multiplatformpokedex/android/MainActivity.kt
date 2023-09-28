@@ -5,6 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -13,9 +14,11 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.*
 import pokemon.rthandi.multiplatformpokedex.Greeting
 
 class MainActivity : ComponentActivity() {
+    @OptIn(DelicateCoroutinesApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -27,12 +30,13 @@ class MainActivity : ComponentActivity() {
                     var phrases by remember { mutableStateOf(listOf("Loading")) }
                     LaunchedEffect(true) {
                         phrases = try {
-                            Greeting().greet()
+                            Greeting().fetchPokemon()
                         } catch (e: Exception) {
                             listOf(e.localizedMessage ?: "error")
                         }
                     }
                     GreetingView(phrases)
+                    CreatePokemonView()
                 }
             }
         }
@@ -50,6 +54,16 @@ fun GreetingView(phrases: List<String>) {
             Text(phrase)
             Divider()
         }
+    }
+}
+
+@OptIn(DelicateCoroutinesApi::class)
+@Composable
+fun CreatePokemonView() {
+    Row {
+        Button(onClick = { GlobalScope.launch { Greeting().createPokemon("name", "fire") } }, content = { Text(
+            text = "Create"
+        )})
     }
 }
 
