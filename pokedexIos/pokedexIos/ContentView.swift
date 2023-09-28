@@ -3,6 +3,7 @@ import shared
 
 struct ContentView: View {
     @ObservedObject private(set) var viewModel: ViewModel
+    @State private var pokemonName: String = ""
 
     var body: some View {
         List(viewModel.phrases, id: \.self) { phrase in
@@ -10,11 +11,12 @@ struct ContentView: View {
         }
         Button("Create", action: { Task {
           do {
-            await try Greeting().createPokemon(name: "ios", type: "fire")
+              try await Greeting().createPokemon(name: $pokemonName.wrappedValue, type: "fire")
           } catch {
             print("sad times")
           }
         } })
+        TextField("Pokemon name", text: $pokemonName)
     }
 }
 
